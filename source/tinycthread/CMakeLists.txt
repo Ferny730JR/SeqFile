@@ -14,7 +14,7 @@ set_property(TARGET tinycthread APPEND PROPERTY INCLUDE_DIRECTORIES "${CMAKE_CUR
 set_property(TARGET tinycthread APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/source")
 set_property(TARGET tinycthread PROPERTY POSITION_INDEPENDENT_CODE True)
 
-option(TINYCTHREAD_DISABLE_TESTS "Disable TinyCThread unit tests")
+option(TINYCTHREAD_DISABLE_TESTS "Disable TinyCThread unit tests" ON)
 option(TINYCTHREAD_INSTALL "Install a static library for TinyCThread")
 
 if(NOT TINYCTHREAD_DISABLE_TESTS)
