@@ -4,6 +4,9 @@
 
 #include "seqf_core.h"
 
+#define STRINGIZE(arg) #arg
+#define TXT2STR(arg) STRINGIZE(arg)
+
 static UTEST_TYPE
 test_seqfopen(void)
 {
@@ -17,27 +20,27 @@ test_seqfopen(void)
 	exp_compression == PLAIN ? !((seqf_statep)file)->stream_is_init : ((seqf_statep)file)->stream_is_init && \
 	((seqf_statep)file)->mutex_is_init
 
-	file = seqfopen("example_files/example.fasta", "a");
+	file = seqfopen(TXT2STR(EXAMPLE_FASTA), "a");
 	mu_assert("Open fasta file", assert_file(file, PLAIN, 'a'));
 	seqfclose(file);
 
-	file = seqfopen("example_files/example.fasta.gz", "a");
+	file = seqfopen(TXT2STR(EXAMPLE_FASTA_GZ), "a");
 	mu_assert("Open compressed fasta file", assert_file(file, GZIP, 'a'));
 	seqfclose(file);
 
-	file = seqfopen("example_files/example.fastq", "q");
+	file = seqfopen(TXT2STR(EXAMPLE_FASTQ), "q");
 	mu_assert("Open fastq file", assert_file(file, PLAIN, 'q'));
 	seqfclose(file);
 
-	file = seqfopen("example_files/example.fastq.gz", "q");
+	file = seqfopen(TXT2STR(EXAMPLE_FASTQ_GZ), "q");
 	mu_assert("Open compressed fastq file", assert_file(file, GZIP, 'q'));
 	seqfclose(file);
 
-	file = seqfopen("example_files/example.reads", "s");
+	file = seqfopen(TXT2STR(EXAMPLE_READS), "s");
 	mu_assert("Open sequences file", assert_file(file, PLAIN, 's'));
 	seqfclose(file);
 
-	file = seqfopen("example_files/example.reads.gz", "s");
+	file = seqfopen(TXT2STR(EXAMPLE_READS_GZ), "s");
 	mu_assert("Open compressed sequences file", assert_file(file, GZIP, 's'));
 	seqfclose(file);
 
@@ -58,7 +61,7 @@ test_seqfclose(void)
 {
 	init_unit_tests("Testing seqfclose");
 	mu_assert("Close null file", seqfclose(NULL) == 1);
-	mu_assert("Close opened file", seqfclose(seqfopen("example_files/example.reads",NULL))==0);
+	mu_assert("Close opened file", seqfclose(seqfopen(TXT2STR(EXAMPLE_READS),NULL))==0);
 
 	unit_tests_end;
 }
@@ -73,7 +76,7 @@ test_seqferrno(void)
 	seqfopen("non-existent-path/no-existent-file", NULL);
 	mu_assert("Opening file that does not exist", seqferrno == 1);
 
-	seqfopen("example_files/example.reads", "wrong mode!");
+	seqfopen(TXT2STR(EXAMPLE_READS), "wrong mode!");
 	mu_assert("Error code for wrong mode", seqferrno == 3);
 
 	unit_tests_end;
