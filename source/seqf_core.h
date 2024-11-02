@@ -12,7 +12,7 @@
 #  include <tinycthread.h>
 #endif
 
-#include "seqfiles.h"
+#include "seqfile.h"
 
 #define SEQF_CHUNK 8192
 
