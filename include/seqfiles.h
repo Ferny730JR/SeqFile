@@ -8,6 +8,11 @@
 extern "C" {
 #endif
 
+#define SEQF_VERSION "0.1.0"
+#define SEQF_VERSION_NUMBER 0x010
+#define SEQF_VERSION_MAJOR 0
+#define SEQF_VERSION_MINOR 1
+#define SEQF_VERSION_PATCH 0
 
 /**
  * @brief Get the error number encountered by SeqFile
