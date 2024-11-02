@@ -79,7 +79,7 @@ bool seqfeof(SeqFile file);
  * @note It is necessary to free the string returned from this function as memory is
  * allocated to store the string.
  */
-char *seqfstrerror(int _seqferrno);
+const char *seqfstrerror(int _seqferrno);
 
 
 /**
@@ -88,9 +88,9 @@ char *seqfstrerror(int _seqferrno);
  * @param _seqferrno The seqferrno variable
  * @param buffer     Buffer to fill with error description
  * @param bufsize    Size of the buffer
- * @return char* 
+ * @return int 0 on success, 1 when buffer was too small for the error message
  */
-char *seqfstrerror_r(int _seqferrno, char *buffer, size_t bufsize);
+int seqfstrerror_r(int _seqferrno, char *buffer, size_t bufsize);
 
 
 /**

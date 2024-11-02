@@ -1,6 +1,4 @@
 #include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 
 #include "seqf_core.h"
 
@@ -182,33 +180,4 @@ bool
 seqfeof(SeqFile file)
 {
 	return ((seqf_statep)file)->eof;
-}
-
-char *
-seqfstrerror_r(int _rnaferrno, char *buffer, size_t bufsize)
-{
-	switch(_rnaferrno) {
-	case 0: strncpy(buffer, "No error was encountered.", bufsize); break;
-	case 1: strerror_r(errno, buffer, bufsize); break;
-	case 2: strncpy(buffer,  "Mutex failed to initialize.", bufsize); break;
-	case 3: strncpy(buffer,  "Invalid mode passsed.", bufsize); break;
-	case 4: strncpy(buffer,  "Read failed, could not determine type of file.", bufsize); break;
-	case 5: strncpy(buffer,  "Read failed, sequence is larger than input buffer.", bufsize); break;
-	case 6: strncpy(buffer,  "Out of memory.", bufsize); break;
-	case 7: strncpy(buffer,  "gets failed, sequence is larger than passed buffer.", bufsize); break;
-	default: strncpy(buffer, "Unrecognized error message.", bufsize); break;
-	}
-	return buffer;
-}
-
-char *
-seqfstrerror(int _rnaferrno)
-{
-	char *buffer = malloc(100);
-	if(buffer == NULL) {
-		seqferrno_ = 6;
-		return NULL;
-	}
-
-	return seqfstrerror_r(_rnaferrno, buffer, 100);
 }
