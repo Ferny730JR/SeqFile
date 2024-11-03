@@ -6,7 +6,11 @@ set(SEQF_SRCS
     seqflib.c
     seqferrno.c
     seqfstrerror.c
-    seqf_read.c)
+    readfasta.c
+    readfastq.c
+    readreads.c
+    seqf_read.c
+    seqfread.c)
 
 set(SEQF_PRIVATE_HEADERS
     seqf_core.h

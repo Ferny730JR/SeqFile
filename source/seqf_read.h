@@ -1,4 +1,15 @@
+#include <string.h> // For mem* functions
+
 #include "seqf_core.h"
+
+
+/**
+ * @brief Get the minimum of two comparable values
+ * 
+ * Used in several *read functions
+ */
+#define MIN2(A, B)      ((A) < (B) ? (A) : (B))
+
 
 /**
  * @brief Loads `buffer' with `bufsize' decompressed bytes and store the number
@@ -84,3 +95,14 @@ extern unsigned char *seqf_skipheader(seqf_statep state, char skip);
  *         reached or an error occurs.
  */
 extern unsigned char *seqf_skipline(seqf_statep state);
+
+
+/* Undocumented functions. Used for file-specific reading */
+
+size_t seqf_qread(seqf_statep state, unsigned char *buffer, size_t bufsize);
+size_t seqf_aread(seqf_statep state, unsigned char *buffer, size_t bufsize);
+size_t seqf_sread(seqf_statep state, unsigned char *buffer, size_t bufsize);
+
+char *seqf_qgets(seqf_statep state, unsigned char *buffer, size_t bufsize);
+char *seqf_agets(seqf_statep state, unsigned char *buffer, size_t bufsize);
+char *seqf_sgets(seqf_statep state, unsigned char *buffer, size_t bufsize);

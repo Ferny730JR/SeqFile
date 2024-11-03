@@ -1,8 +1,4 @@
-#include <string.h>
-
 #include "seqf_read.h"
-
-#define MIN2(A, B)      ((A) < (B) ? (A) : (B))
 
 extern int
 seqf_load(seqf_statep state, unsigned char *buffer, size_t bufsize, size_t *read)
