@@ -104,3 +104,38 @@ seqfagets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
 	return seqf_agets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
+
+int
+seqfagetnt_unlocked(SeqFile file)
+{
+	seqf_statep state = (seqf_statep)file;
+	if(state == NULL || state->eof)
+		return EOF;
+	if(state->have == 0 && seqf_fetch(state) != 0)
+		return EOF;
+	
+	/* Skip past newline characters, we're interested in what comes next */
+	if(*state->next == '\n') {
+		state->have--;
+		state->next++;
+	}
+
+	/* If start of fasta header, skip it to get to nt, or return on error */
+	if(*state->next == '>' && seqf_skipline(state) == NULL)
+		return EOF;
+
+	state->have--;
+	return *state->next++;
+}
+
+int
+seqfagetnt(SeqFile file)
+{
+	seqf_statep state = (seqf_statep)file;
+
+	mtx_lock(&state->mutex);
+	int ret = seqfagetnt_unlocked(file);
+	mtx_unlock(&state->mutex);
+
+	return ret;
+}

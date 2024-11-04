@@ -127,3 +127,43 @@ seqfqgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
 	return seqf_qgets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
+
+int
+seqfqgetnt_unlocked(SeqFile file)
+{
+	seqf_statep state = (SeqFile)file;
+	if(state == NULL || state->eof)
+		return EOF;
+	if(state->have == 0 && seqf_fetch(state) != 0)
+		return EOF;
+	
+	/* Skip past newline character, we want to see what's next */
+	if(*state->next == '\n') {
+		state->have--;
+		state->next++;
+	}
+
+	/* If start if fastq header, skip it to get to the nt */
+	if(*state->next == '@' && seqf_skipline(state) == NULL)
+		return EOF;
+	
+	/* If quality scores, skip it and get to the next nt */
+	if(*state->next == '+' && seqf_skipheader(state, '@') == NULL)
+		return EOF;
+	
+	/* In nt, return it and update next & num available bytes */
+	state->have--;
+	return *state->next++;
+}
+
+int
+seqfqgetnt(SeqFile file)
+{
+	seqf_statep state = (SeqFile)file;
+
+	mtx_lock(&state->mutex);
+	int ret = seqfqgetnt_unlocked(file);
+	mtx_unlock(&state->mutex);
+
+	return ret;
+}

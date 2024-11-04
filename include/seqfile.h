@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #define SEQF_VERSION "0.1.0"
-#define SEQF_VERSION_NUMBER 0x010
+#define SEQF_VERSION_NUMBER 0x00001000U
 #define SEQF_VERSION_MAJOR 0
 #define SEQF_VERSION_MINOR 1
 #define SEQF_VERSION_PATCH 0
@@ -176,6 +176,73 @@ char *seqfsgets(SeqFile file, char *buffer, size_t bufsize);
 char *seqfsgets_unlocked(SeqFile file, char *buffer, size_t bufsize);
 char *seqfqgets(SeqFile file, char *buffer, size_t bufsize);
 char *seqfqgets_unlocked(SeqFile file, char *buffer, size_t bufsize);
+
+
+/**
+ * @brief Read only one nucleotide from the SeqFile stream. 
+ * 
+ * `seqfgetnt` either returns the nucleotide or EOF when it encounters an error
+ * or the end of file.
+ * 
+ * @param file SeqFile to read from
+ * @return int Next nucleotide character, or EOF on error
+ */
+int seqfgetnt(SeqFile file);
+
+
+/**
+ * @brief Read only one nucleotide from the SeqFile stream. 
+ * 
+ * `seqfgetnt` either returns the nucleotide or EOF when it encounters an error
+ * or the end of file.
+ * 
+ * @param file SeqFile to read from
+ * @return int Next nucleotide character, or EOF on error
+ * 
+ * @note
+ * This function does not use a mutex to lock access to the SeqFile internal 
+ * buffer. As such, it is not thread-safe. Only use in single-threaded
+ * applications.
+ */
+int seqfgetnt_unlocked(SeqFile file);
+
+
+/* Undocumented getnt functions */
+int seqfagetnt(SeqFile file);
+int seqfagetnt_unlocked(SeqFile file);
+int seqfqgetnt(SeqFile file);
+int seqfqgetnt_unlocked(SeqFile file);
+int seqfsgetnt(SeqFile file);
+int seqfsgetnt_unlocked(SeqFile file);
+
+
+/**
+ * @brief Read the next available byte from the SeqFile stream
+ * 
+ * `seqfgetc` either returns the bytes, or EOF when it encounter an error of the
+ * end of file.
+ * 
+ * @param file SeqFile to read from
+ * @return int Next byte, or EOF on error
+ */
+int seqfgetc(SeqFile file);
+
+
+/**
+ * @brief Read the next available byte from the SeqFile stream
+ * 
+ * `seqfgetc` either returns the bytes, or EOF when it encounter an error of the
+ * end of file.
+ * 
+ * @param file SeqFile to read from
+ * @return int Next byte, or EOF on error
+ * 
+ * @note
+ * This function does not use a mutex to lock access to the SeqFile internal 
+ * buffer. As such, it is not thread-safe. Only use in single-threaded
+ * applications.
+ */
+int seqfgetc_unlocked(SeqFile file);
 
 #ifdef __cplusplus
 }

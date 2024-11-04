@@ -101,3 +101,51 @@ seqfgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
 	return seqf_gets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
+
+int
+seqfgetc_unlocked(SeqFile file)
+{
+	seqf_statep state = (seqf_statep)file;
+	if(state == NULL || state->eof)
+		return EOF;
+	if(state->have == 0 && seqf_fetch(state) != 0)
+		return EOF;
+	state->have--;
+	return *state->next++;	
+}
+
+int
+seqfgetc(SeqFile file)
+{
+	seqf_statep state = (seqf_statep)file;
+
+	mtx_lock(&state->mutex);
+	int ret = seqfgetc_unlocked(file);
+	mtx_unlock(&state->mutex);
+
+	return ret;
+}
+
+int
+seqfgetnt_unlocked(SeqFile file)
+{
+	switch(((seqf_statep)file)->type) {
+	case 'a': return seqfagetnt_unlocked(file);
+	case 'q': return seqfqgetnt_unlocked(file);
+	case 's': return seqfsgetnt_unlocked(file);
+	case 'b': return seqfgetc_unlocked(file);
+	default:  return -1;
+	}
+}
+
+int
+seqfgetnt(SeqFile file)
+{
+	seqf_statep state = (seqf_statep)file;
+
+	mtx_lock(&state->mutex);
+	int ret = seqfgetnt_unlocked(file);
+	mtx_unlock(&state->mutex);
+
+	return ret;
+}
