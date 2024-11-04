@@ -1,3 +1,9 @@
+/* seqf_read.c - Common internal read functions used by other seq readers
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include "seqf_read.h"
 
 extern int

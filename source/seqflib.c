@@ -1,3 +1,9 @@
+/* seqflib.c - seqf functions for interacting with a SeqFile pointer
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include <stdlib.h>
 
 #include "seqf_core.h"

@@ -1,3 +1,9 @@
+/* seqfread.c - seqf functions for general file reading of SeqFile's
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include "seqf_read.h"
 
 static size_t

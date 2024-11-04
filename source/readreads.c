@@ -1,3 +1,9 @@
+/* readreads.c - Functions for parsing *.reads files (raw sequences)
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include "seqf_read.h"
 
 size_t

@@ -1,3 +1,12 @@
+/* readfasta.c - Functions for parsing fasta files
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ * 
+ * This file should not be used in applications. It is used to implement the
+ * seqf library and is subject to change.
+ */
+
 #include "seqf_read.h"
 
 size_t

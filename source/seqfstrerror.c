@@ -1,3 +1,9 @@
+/* seqfstrerror.c - seqf functions to get a readable error output
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include <errno.h>
 #include <string.h>
 

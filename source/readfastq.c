@@ -1,3 +1,9 @@
+/* readfastq.c - Functions for parsing fastq files
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ */
+
 #include "seqf_read.h"
 
 size_t

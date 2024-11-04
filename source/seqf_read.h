@@ -1,3 +1,12 @@
+/* seqf_read.h - Header to access seqf's internal definition and read functions
+ * 
+ * Copyright (c) Francisco F. Cavazos 2024
+ * Subject to the MIT License
+ * 
+ * This file should not be used in applications. It is used to implement the
+ * seqf library and is subject to change.
+ */
+
 #include <string.h> // For mem* functions
 
 #include "seqf_core.h"
