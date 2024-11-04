@@ -87,19 +87,17 @@ seqfopen(const char *path, const char *mode)
 
 	/* Determine type of compression, if any */
 	if(fread(seq_file->in_buf, sizeof(unsigned char), 2, seq_file->file) != 2) {
-		fseek(seq_file->file, 0, SEEK_SET);
 		seq_file->compression = PLAIN;
-	}
-	if(seq_file->in_buf[0] == 0x1F && seq_file->in_buf[1] == 0x8B) {
+	} else if(seq_file->in_buf[0] == 0x1F && seq_file->in_buf[1] == 0x8B) {
 		seq_file->compression = GZIP;
 	} else if (seq_file->in_buf[0] == 0x78 && (seq_file->in_buf[1] == 0x01 || 
 	  seq_file->in_buf[1] == 0x5E || seq_file->in_buf[1] == 0x9C || 
 	  seq_file->in_buf[1] == 0xDA)) {
         seq_file->compression = ZLIB;
     } else {
-		fseek(seq_file->file, 0, SEEK_SET);
 		seq_file->compression = PLAIN;
 	}
+	fseek(seq_file->file, 0, SEEK_SET);
 
 	/* Initialize decompressor */
 	if(seq_file->compression != PLAIN) {
@@ -165,14 +163,30 @@ seqfrewind(SeqFile file)
 	if(file == NULL)
 		return 1;
 	seqf_statep state = (seqf_statep)file;
-	if(fseek(state->file, state->compression==PLAIN ? 0L : 2L, SEEK_SET)==-1) {
+	if(fseek(state->file, 0, SEEK_SET)==-1) {
 		seqferrno_ = 1;
 		return 1;
 	}
 	state->have = 0;
-	state->stream.avail_in = 0;
-	state->stream.avail_out = 0;
 	state->eof = false;
+	if(state->stream_is_init) {
+		int ret;
+#if defined _IGZIP_H
+		isal_inflate_reset(&state->stream);
+		seq_file->stream.crc_flag = seq_file->compression == GZIP ? ISAL_GZIP : ISAL_ZLIB;
+		seq_file->stream.next_in = seq_file->in_buf;
+#else
+		if(state->compression == GZIP)
+			ret = inflateReset2(&state->stream, 16 + MAX_WBITS);
+		else if(state->compression == ZLIB)
+			ret = inflateReset(&state->stream);
+		else
+			return 1;
+		if(ret != Z_OK)
+			return 1;
+		state->stream.next_in = state->in_buf;
+#endif
+	}
 	return 0;
 }
 
