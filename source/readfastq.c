@@ -137,7 +137,7 @@ seqfqgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 int
 seqfqgetnt_unlocked(SeqFile file)
 {
-	seqf_statep state = (SeqFile)file;
+	seqf_statep state = (seqf_statep)file;
 	if(state == NULL || state->eof)
 		return EOF;
 	if(state->have == 0 && seqf_fetch(state) != 0)
@@ -165,7 +165,7 @@ seqfqgetnt_unlocked(SeqFile file)
 int
 seqfqgetnt(SeqFile file)
 {
-	seqf_statep state = (SeqFile)file;
+	seqf_statep state = (seqf_statep)file;
 
 	mtx_lock(&state->mutex);
 	int ret = seqfqgetnt_unlocked(file);
