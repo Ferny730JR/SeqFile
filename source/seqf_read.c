@@ -16,10 +16,8 @@ seqf_load(seqf_statep state, unsigned char *buffer, size_t bufsize, size_t *read
 			seqferrno_ = 1;
 			return 1;
 		}
-		if(*read == 0) {
+		if(*read == 0)
 			state->eof = true;
-			return 2;
-		}
 		return 0;
 	}
 
