@@ -116,6 +116,8 @@ seqfgetc_unlocked(SeqFile file)
 		return EOF;
 	if(state->have == 0 && seqf_fetch(state) != 0)
 		return EOF;
+	if(state->have == 0)
+		return EOF;
 	state->have--;
 	return *state->next++;	
 }

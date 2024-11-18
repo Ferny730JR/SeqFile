@@ -142,6 +142,8 @@ seqfqgetnt_unlocked(SeqFile file)
 		return EOF;
 	if(state->have == 0 && seqf_fetch(state) != 0)
 		return EOF;
+	if(state->have == 0) /* Fetched no bytes, return EOF */
+		return EOF;
 	
 	/* Skip past newline character, we want to see what's next */
 	if(*state->next == '\n') {

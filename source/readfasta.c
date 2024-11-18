@@ -74,7 +74,7 @@ seqf_agets(seqf_statep state, unsigned char *buffer, size_t bufsize)
 		if(state->have == 0 || *state->next == '>')
 			break;
 		
-		/* Look for end of line in inteseql buffer */
+		/* Look for end of line in internal buffer */
 		n = MIN2(state->have, left);
 		eos = (unsigned char *)memchr(state->next, '\n', n);
 		if(eos != NULL)
@@ -121,6 +121,8 @@ seqfagetnt_unlocked(SeqFile file)
 	if(state == NULL || state->eof)
 		return EOF;
 	if(state->have == 0 && seqf_fetch(state) != 0)
+		return EOF;
+	if(state->have == 0) /* Fetched no bytes, return EOF */
 		return EOF;
 	
 	/* Skip past newline characters, we're interested in what comes next */
