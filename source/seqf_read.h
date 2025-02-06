@@ -106,6 +106,43 @@ extern unsigned char *seqf_skipheader(seqf_statep state, char skip);
 extern unsigned char *seqf_skipline(seqf_statep state);
 
 
+/**
+ * @brief Function boilerplate; define a helpful macro to not have to rewrite it
+ * everytime.
+ * 
+ * This copies the line within the state's internal buffer into buf. The amount
+ * to copy is determined by `left`, the amount of bytes within the buf, or the
+ * number of bytes available within the internal buffer - whichever is smaller.
+ * After copying, shift the state's internal buffer and buf to point to the next
+ * available empty byte.
+ * 
+ * @param state SeqFile internal state to modify
+ * @param buf   Buffer to copy data into
+ * @param left  Number of bytes left in `buf`
+ * @param eol   char pointer to store end of line
+ */
+#define seqf_shiftandcopy(state, buf, left, eol) \
+	/* Get maximum bytes we are allowed to read */ \
+	size_t n = MIN2(state->have, left); \
+\
+	/* Find how many bytes are in the line, if eol is found */ \
+	eol = memchr(state->next, '\n', n); \
+	if(eol != NULL) \
+		n = (size_t)(eol - state->next); \
+\
+	/* Copy the line (without \n) and shift internal pointer */ \
+	memcpy(buf, state->next, n); \
+	left -= n; \
+	buf  += n; \
+\
+	/* Skip past newline within internal buffer if eol was found */ \
+	if(eol != NULL) \
+		n++; \
+	state->have -= n; \
+	state->next += n
+// end seqfshiftcpy
+
+
 /* Undocumented functions. Used for file-specific reading */
 
 size_t seqf_qread(seqf_statep state, unsigned char *buffer, size_t bufsize);
