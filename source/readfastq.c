@@ -67,10 +67,11 @@ seqfqread_unlocked(SeqFile file, char *buffer, size_t bufsize)
 }
 
 char *
-seqf_qgets(seqf_statep state, unsigned char *buffer, size_t bufsize)
+seqfqgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
-	if(state == NULL || buffer == NULL || bufsize == 0)
+	if(file == NULL)
 		return NULL;
+	seqf_statep state = (seqf_statep)file;
 	if(state->eof)
 		return NULL;
 	
@@ -79,41 +80,28 @@ seqf_qgets(seqf_statep state, unsigned char *buffer, size_t bufsize)
 		return NULL;
 
 	/* Declare variables */
-	register unsigned char *eos;
-	register char *str = (char *)buffer;
-	register size_t n, left = bufsize - 1;
+	unsigned char *buf = (unsigned char *)buffer;
+	unsigned char *eol;
+	size_t left = bufsize - 1;
 
 	/* Fill buffer with fastq sequence */
 	if(left) do {
 		if(state->have == 0 && seqf_fetch(state) != 0)
 			return NULL; // error in seqf_fetch
-		if(state->have == 0 || *state->next == '+')
+		if(state->have == 0)
+			break;
+		if(*state->next == '+')
 			break;
 
-		/* Look for end of line in internal buffer */
-		n = MIN2(state->have, left);
-		eos = (unsigned char *)memchr(state->next, '\n', n);
-		if(eos != NULL)
-			n = (size_t)(eos - state->next);
-
-		/* Copy to end of seq, DONT include newline */
-		memcpy(buffer, state->next, n);
-		left -= n;
-		buffer += n;
-
-		/* Skip past newline if found */
-		if(eos != NULL)
-			n++;
-		state->have -= n;
-		state->next += n;
+		seqf_shiftandcopy(state, buf, left, eol);
 	} while(left);
 
 	seqf_skipline(state); /* Skip '+' line */
 	seqf_skipline(state); /* Skip quality scores */
 
-	/* Null terminate and return str */
-	buffer[0] = '\0';
-	return str;
+	/* Null terminate and return buffer */
+	buf[0] = '\0';
+	return buffer;
 }
 
 char *
@@ -122,16 +110,10 @@ seqfqgets(SeqFile file, char *buffer, size_t bufsize)
 	seqf_statep state = (seqf_statep)file;
 
 	mtx_lock(&state->mutex);
-	char *ret = seqf_qgets(state, (unsigned char *)buffer, bufsize);
+	char *ret = seqfqgets_unlocked(file, buffer, bufsize);
 	mtx_unlock(&state->mutex);
 
 	return ret;
-}
-
-char *
-seqfqgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
-{
-	return seqf_qgets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
 
 int

@@ -53,18 +53,18 @@ seqfsread_unlocked(SeqFile file, char *buffer, size_t bufsize)
 }
 
 char *
-seqf_sgets(seqf_statep state, unsigned char *buffer, size_t bufsize)
+seqfsgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
-	/* Sanity checks */
-	if(state == NULL || buffer == NULL || bufsize == 0)
+	if(file == NULL)
 		return NULL;
+	seqf_statep state = (seqf_statep)file;
 	if(state->eof)
 		return NULL;
 
 	/* Declare variables */
-	register size_t n, left = bufsize - 1;
-	register char *str = (char *)buffer;
-	register unsigned char *eos;
+	unsigned char *buf = (unsigned char *)buffer;
+	unsigned char *eol;
+	size_t left = bufsize - 1;
 
 	/* Begin filling buffer */
 	if(left) do {
@@ -73,24 +73,11 @@ seqf_sgets(seqf_statep state, unsigned char *buffer, size_t bufsize)
 		if(state->have == 0)
 			break;
 
-		n = MIN2(state->have, left);
-		eos = (unsigned char *)memchr(state->next, '\n', n);
-		if(eos != NULL)
-			n = (size_t)(eos - state->next);
+		seqf_shiftandcopy(state, buf, left, eol);
+	} while(left && eol == NULL);
+	buf[0] = '\0';
 
-		/* Copy sequence excluding newline */
-		memcpy(buffer, state->next, n);
-		left -= n;
-		buffer += n;
-
-		if(eos != NULL)
-			n++;
-		state->have -= n;
-		state->next += n;
-	} while(left && eos == NULL);
-	buffer[0] = '\0';
-
-	return str;
+	return buffer;
 }
 
 char *
@@ -99,16 +86,10 @@ seqfsgets(SeqFile file, char *buffer, size_t bufsize)
 	seqf_statep state = (seqf_statep)file;
 
 	mtx_lock(&state->mutex);
-	char *ret = seqf_sgets(state, (unsigned char *)buffer, bufsize);
+	char *ret = seqfsgets_unlocked(file, buffer, bufsize);
 	mtx_unlock(&state->mutex);
 
 	return ret;
-}
-
-char *
-seqfsgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
-{
-	return seqf_sgets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
 
 int

@@ -87,11 +87,11 @@ seqfgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 	case 'a':
 		return seqfagets_unlocked(file, buffer, bufsize);
 	case 'q':
-		return seqf_qgets(state, (unsigned char *)buffer, bufsize);
+		return seqfqgets_unlocked(file, buffer, bufsize);
 	case 's':
-		return seqf_sgets(state, (unsigned char *)buffer, bufsize);
+		return seqfsgets_unlocked(file, buffer, bufsize);
 	case 'b':
-		return  seqf_line(state, (unsigned char *)buffer, bufsize);
+		return seqf_line(state, (unsigned char *)buffer, bufsize);
 	default:
 		seqferrno_ = 5;
 		return NULL;
