@@ -56,44 +56,42 @@ seqfaread_unlocked(SeqFile file, char *buffer, size_t bufsize)
 }
 
 char *
-seqf_agets(seqf_statep state, unsigned char *buffer, size_t bufsize)
+seqfagets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
-	/* Skip header information, in other words find the start of next sequence */
-	if(seqf_skipheader(state, '>') == NULL)
+	/* Sanity checks & early return in case we're at eof */
+	if(file == NULL)
+		return NULL;
+	seqf_statep state = (seqf_statep)file;
+	if(state->eof)
 		return NULL;
 
-	/* Declare variables */
-	register unsigned char *eos;
-	register char *str = (char *)buffer;
-	register size_t n, left = bufsize - 1;
+	/* Skip past fasta header info, we want the sequence */
+	if(seqf_skipheader(state, '>') == NULL)
+		return NULL;
+	
+	/* Variables to be used in obtaining the sequence */
+	unsigned char *buf = (unsigned char *)buffer;
+	unsigned char *eol;
+	size_t left = bufsize - 1; // -1 to make space for null terminator
 
-	/* Fill buffer with seq */
+	/* Main loop: while there are still bytes we can fill within the buffer,
+	   fill it with the sequence. If internal buffer runs out, fetch more bytes.
+	   Repeat this until we reach the end of the sequence (determined by finding
+	   the '>' character; the next fasta record), or we run out of available
+	   bytes within the buffer. */
 	if(left) do {
 		if(state->have == 0 && seqf_fetch(state) != 0)
-			return NULL; // error in seqf_fetch
-		if(state->have == 0 || *state->next == '>')
+			return NULL;
+		if(state->have == 0)
 			break;
-		
-		/* Look for end of line in internal buffer */
-		n = MIN2(state->have, left);
-		eos = (unsigned char *)memchr(state->next, '\n', n);
-		if(eos != NULL)
-			n = (size_t)(eos - state->next);
+		if(*state->next == '>')
+			break;
 
-		/* Copy to end of seq, DONT include newline */
-		memcpy(buffer, state->next, n);
-		left -= n;
-		buffer += n;
-
-		/* Skip past newline if found */
-		if(eos != NULL)
-			n++;
-		state->have -= n;
-		state->next += n;
+		seqf_shiftandcopy(state, buf, left, eol);
 	} while(left);
+	buf[0] = '\0';
 
-	buffer[0] = '\0';
-	return str;
+	return buffer;
 }
 
 char *
@@ -102,16 +100,10 @@ seqfagets(SeqFile file, char *buffer, size_t bufsize)
 	seqf_statep state = (seqf_statep)file;
 
 	mtx_lock(&state->mutex);
-	char *ret = seqf_agets(state, (unsigned char *)buffer, bufsize);
+	char *ret = seqfagets_unlocked(file, buffer, bufsize);
 	mtx_unlock(&state->mutex);
 
 	return ret;
-}
-
-char *
-seqfagets_unlocked(SeqFile file, char *buffer, size_t bufsize)
-{
-	return seqf_agets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
 
 int

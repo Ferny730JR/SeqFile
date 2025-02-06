@@ -76,14 +76,22 @@ seqf_line(seqf_statep state, unsigned char *buffer, size_t bufsize)
 	return (char *)str;
 }
 
-static char *
-seqf_gets(seqf_statep state, unsigned char *buffer, size_t bufsize)
+char *
+seqfgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
 {
+	if(file == NULL)
+		return NULL;
+	seqf_statep state = (seqf_statep)file;
+
 	switch(state->type) {
-	case 'a': return seqf_agets(state, buffer, bufsize);
-	case 'q': return seqf_qgets(state, buffer, bufsize);
-	case 's': return seqf_sgets(state, buffer, bufsize);
-	case 'b': return seqf_line(state, buffer, bufsize);
+	case 'a':
+		return seqfagets_unlocked(file, buffer, bufsize);
+	case 'q':
+		return seqf_qgets(state, (unsigned char *)buffer, bufsize);
+	case 's':
+		return seqf_sgets(state, (unsigned char *)buffer, bufsize);
+	case 'b':
+		return  seqf_line(state, (unsigned char *)buffer, bufsize);
 	default:
 		seqferrno_ = 5;
 		return NULL;
@@ -93,19 +101,15 @@ seqf_gets(seqf_statep state, unsigned char *buffer, size_t bufsize)
 char *
 seqfgets(SeqFile file, char *buffer, size_t bufsize)
 {
+	if(file == NULL)
+		return NULL;
 	seqf_statep state = (seqf_statep)file;
 
 	mtx_lock(&state->mutex);
-	char *ret = seqf_gets(state, (unsigned char *)buffer, bufsize);
+	char *ret = seqfgets_unlocked(file, buffer, bufsize);
 	mtx_unlock(&state->mutex);
 
 	return ret;
-}
-
-char *
-seqfgets_unlocked(SeqFile file, char *buffer, size_t bufsize)
-{
-	return seqf_gets((seqf_statep)file, (unsigned char *)buffer, bufsize);
 }
 
 int
