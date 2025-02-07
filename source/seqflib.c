@@ -175,13 +175,13 @@ seqfrewind(SeqFile file)
 	}
 	state->have = 0;
 	state->eof = false;
+#if defined _IGZIP_H
+	isal_inflate_reset(&state->stream);
+	state->stream.crc_flag = state->compression == GZIP ? ISAL_GZIP : ISAL_ZLIB;
+	state->stream.next_in = state->in_buf;
+#else
 	if(state->stream_is_init) {
 		int ret;
-#if defined _IGZIP_H
-		isal_inflate_reset(&state->stream);
-		seq_file->stream.crc_flag = seq_file->compression == GZIP ? ISAL_GZIP : ISAL_ZLIB;
-		seq_file->stream.next_in = seq_file->in_buf;
-#else
 		if(state->compression == GZIP)
 			ret = inflateReset2(&state->stream, 16 + MAX_WBITS);
 		else if(state->compression == ZLIB)
@@ -191,8 +191,8 @@ seqfrewind(SeqFile file)
 		if(ret != Z_OK)
 			return 1;
 		state->stream.next_in = state->in_buf;
-#endif
 	}
+#endif
 	return 0;
 }
 

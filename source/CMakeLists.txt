@@ -30,6 +30,11 @@ target_link_libraries(seqf_shared PUBLIC
 target_link_libraries(seqf_static PUBLIC
     ${THREAD_LIB} ${COMPRESSION_LIB})
 
+target_compile_definitions(seqf_shared PRIVATE
+    _HAS_ISA_L_=$<BOOL:${KATSS_HAS_ISA_L}>)
+target_compile_definitions(seqf_static PRIVATE
+    _HAS_ISA_L_=$<BOOL:${KATSS_HAS_ISA_L}>)
+
 # Set optimization for release builds
 if(ipo_is_supported)
     set_property(TARGET seqf_shared seqf_static

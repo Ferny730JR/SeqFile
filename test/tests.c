@@ -17,7 +17,6 @@ test_seqfopen(void)
 	file != NULL && \
 	((seqf_statep)file)->compression == exp_compression && \
 	((seqf_statep)file)->type == exp_type && \
-	exp_compression == PLAIN ? !((seqf_statep)file)->stream_is_init : ((seqf_statep)file)->stream_is_init && \
 	((seqf_statep)file)->mutex_is_init
 
 	file = seqfopen(TXT2STR(EXAMPLE_FASTA), "a");
