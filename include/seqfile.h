@@ -37,6 +37,8 @@ extern "C" {
 #define SEQF_VERSION_MINOR 1
 #define SEQF_VERSION_PATCH 0
 
+#define SEQFBUFSIZ 8192
+
 /**
  * @brief Get the error number encountered by SeqFile
  * 

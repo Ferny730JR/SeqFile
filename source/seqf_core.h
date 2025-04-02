@@ -24,8 +24,6 @@
 
 #include "seqfile.h"
 
-#define SEQF_CHUNK 8192
-
 extern _Thread_local int seqferrno_;
 
 typedef enum SEQF_COMPRESSION {
@@ -35,7 +33,7 @@ typedef enum SEQF_COMPRESSION {
 } SEQF_COMPRESSION;
 
 struct seqf_state {
-	FILE *file;                    /** File pointer */
+	int fd;                        /** File descriptor */
 	SEQF_COMPRESSION compression;  /** Type of compression, if any */
 	unsigned char type;            /** Type of file, e.g FASTA, FASTQ, or reads */
 #if defined _IGZIP_H               /** Use isa-l if available, otherwise zlib */
@@ -46,7 +44,9 @@ struct seqf_state {
 #endif
 
 	unsigned char *in_buf;         /** Input buffer*/
+	size_t in_bufsiz;              /** Size of the input buffer */
 	unsigned char *out_buf;        /** Output buffer */
+	size_t out_bufsiz;             /** Size of the output buffer */
 	unsigned char *next;           /** Next available byte in output buffer */
 	size_t have;                   /** Numberof bytes available in next */
 
