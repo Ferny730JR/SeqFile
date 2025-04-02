@@ -116,9 +116,12 @@ seqfdopen(int fd, const char *mode)
 	do {
 		size_t n = read(seq_file->fd, seq_file->in_buf, 2);
 		if(n == -1) EXIT_AND_SETERR(seq_file, 3);
+		if(n == 0) break; // reached EOF before reading magic bytes
 		nread += n;
 	} while(nread != 2);
-	if(seq_file->in_buf[0] == 0x1F && seq_file->in_buf[1] == 0x8B) {
+	if(nread < 2) {
+		seq_file->compression = PLAIN;
+	} if(seq_file->in_buf[0] == 0x1F && seq_file->in_buf[1] == 0x8B) {
 		seq_file->compression = GZIP;
 	} else if (seq_file->in_buf[0] == 0x78 && (seq_file->in_buf[1] == 0x01 || 
 	  seq_file->in_buf[1] == 0x5E || seq_file->in_buf[1] == 0x9C || 
