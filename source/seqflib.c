@@ -1,11 +1,10 @@
 /* seqflib.c - seqf functions for opening a SeqFile stream
  * 
- * Copyright (c) Francisco F. Cavazos 2025
+ * Copyright (c) 2024-2025 Francisco F. Cavazos
  * Subject to the MIT License
  */
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -105,10 +104,10 @@ seqfdopen(int fd, const char *mode)
 	if(seq_file->in_buf == NULL)
 		EXIT_AND_SETERR(seq_file, 6);
 	seq_file->in_bufsiz = SEQFBUFSIZ;
-	seq_file->out_buf = malloc(SEQFBUFSIZ * sizeof *seq_file->out_buf);
+	seq_file->out_buf = malloc(2*SEQFBUFSIZ * sizeof *seq_file->out_buf);
 	if(seq_file->out_buf == NULL)
 		EXIT_AND_SETERR(seq_file, 6);
-	seq_file->out_bufsiz = SEQFBUFSIZ;
+	seq_file->out_bufsiz = 2*SEQFBUFSIZ;
 	seq_file->next = seq_file->out_buf;
 
 	/* Determine type of compression, if any */
@@ -273,7 +272,7 @@ seqfsetbuf(SeqFile file, size_t bufsize)
 {
 	if(seqfsetibuf(file, bufsize) != 0)
 		return -1;
-	if(seqfsetobuf(file, bufsize) != 0)
+	if(seqfsetobuf(file, bufsize << 1) != 0)
 		return -2;
 	return 0;
 }

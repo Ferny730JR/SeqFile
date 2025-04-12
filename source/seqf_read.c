@@ -1,6 +1,6 @@
 /* seqf_read.c - Common internal read functions used by other seq readers
  * 
- * Copyright (c) Francisco F. Cavazos 2024
+ * Copyright (c) 2024-2025 Francisco F. Cavazos
  * Subject to the MIT License
  */
 
@@ -11,7 +11,6 @@
     #include <io.h>
     #define read _read
 #else
-    #include <fcntl.h>
     #include <unistd.h>
 #endif
 
