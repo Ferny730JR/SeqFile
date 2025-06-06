@@ -9,7 +9,9 @@
 #ifdef _WIN32
     #include <windows.h>
     #include <io.h>
+	#include <basetsd.h>
     #define read _read
+	typedef SSIZE_T ssize_t;
 #else
     #include <unistd.h>
 #endif

@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <fcntl.h>
 #ifdef _WIN32
     #include <windows.h>
     #include <io.h>
@@ -18,7 +19,6 @@
     #define O_RDWR _O_RDWR
     #define O_CREAT _O_CREAT
 #else
-    #include <fcntl.h>
     #include <unistd.h>
 #endif
 
