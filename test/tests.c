@@ -121,10 +121,10 @@ test_seqfgetc(void)
 	seqfclose(file);
 	mu_assert("Many seqfgetc calls on compressed file", passed);
 
-	char buf[300]; tmp=buf;
-	FILE *fp = fopen(TXT2STR(EXAMPLE_FASTA), "r");
+	char buf[400]; tmp=buf;
+	FILE *fp = fopen(TXT2STR(EXAMPLE_FASTA), "rb");
 	file = seqfopen(TXT2STR(EXAMPLE_FASTA), NULL);
-	int nread = fread(buf, 1, 290, fp);
+	int nread = fread(buf, 1, sizeof(buf), fp);
 	for(int i=0; i<nread; i++) {
 		if(*tmp++ != seqfgetc(file)) {
 			passed = false;
