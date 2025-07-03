@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0) # 3.9 for IPO
+cmake_minimum_required(VERSION 3.10.0) # 3.10 for future compatibility
 project(SeqFile
 	VERSION 0.1.0
 	DESCRIPTION "An efficient fasta/fastq processing library"
@@ -11,14 +11,17 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIncludeFile)
 CHECK_INCLUDE_FILE(threads.h HAVE_C11_THREADS)
 if(NOT HAVE_C11_THREADS)
 	set(THREAD_LIB tinycthread)
+	set(C11_THREADS_DEFINE "__STDC_NO_THREADS__=1")
 else()
 	find_package(Threads REQUIRED)
 	set(THREAD_LIB Threads::Threads)
+	set(NO_C11_THREADS_DEFINE "")
 endif()
 
 include(CheckIPOSupported)
