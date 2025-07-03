@@ -7,4 +7,5 @@ target_compile_definitions(test-seqf PRIVATE
     EXAMPLE_FASTQ_GZ=${CMAKE_CURRENT_SOURCE_DIR}/example_files/example.fastq.gz
     EXAMPLE_READS=${CMAKE_CURRENT_SOURCE_DIR}/example_files/example.reads
     EXAMPLE_READS_GZ=${CMAKE_CURRENT_SOURCE_DIR}/example_files/example.reads.gz
+    ${C11_THREADS_DEFINE}
 )
